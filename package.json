@@ -2,8 +2,10 @@
   "name": "journal-api",
   "version": "1.0.0",
   "description": "REST API for journal application",
+  "type": "module",
   "main": "index.js",
   "scripts": {
+    "start": "node src/app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
