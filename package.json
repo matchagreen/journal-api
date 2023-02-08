@@ -1,0 +1,22 @@
+{
+  "name": "journal-api",
+  "version": "1.0.0",
+  "description": "REST API for journal application",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alanperezse/journal-api.git"
+  },
+  "author": "Alan Perez",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/alanperezse/journal-api/issues"
+  },
+  "homepage": "https://github.com/alanperezse/journal-api#readme",
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
