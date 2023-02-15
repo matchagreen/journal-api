@@ -1,7 +1,9 @@
 interface Link {
-    _id: string,
+    _id: string | undefined,
     link: string,
-    boardId: string
+    boardId: string,
+    createdAt: Date,
+    updatedAt: Date,
 }
 
 export default Link

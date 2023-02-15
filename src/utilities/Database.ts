@@ -60,12 +60,25 @@ export default class Database {
         const query = {
             boardId: boardId
         }
-        const projection = {
-            link: 1,
-        }
 
-        const links = await collection.find(query).toArray()
+        const links = await collection.find(query)
+            .sort({updatedAt: 1})
+            .skip(page > 0 ? (page - 1) * size : 0)
+            .limit(size)
+            .toArray()
+
         return links
+    }
+
+    // _id should be undefined
+    async createLink(link: Link): Promise<Link> {
+        const collection = this.getCollection(Collections.Links)
+        const ack =  await collection.insertOne(link)
+        
+        return {
+            ...link,
+            _id: ack.insertedId
+        }
     }
 
     private getCollection(collection: string) {
