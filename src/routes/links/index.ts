@@ -1,18 +1,14 @@
 import express from 'express'
-import {validationResult, query, param} from 'express-validator';
+import {validationResult, query, param, checkSchema} from 'express-validator';
 import Database from '../../utilities/Database.js'
 import Link from '../../models/Link.js'
-
-interface PostLink {
-    link: string,
-}
+import { validate } from 'express-jsonschema';
 
 interface GettLink {
     link: string,
     createdAt: Date,
     updatedAt: Date
 }
-
 
 const router = express.Router()
 router.get(
@@ -22,7 +18,6 @@ router.get(
     param('username').not().isEmpty(),
     param('boardname').not().isEmpty(),
     async (req, res) =>  {
-
     // Validate
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -59,13 +54,29 @@ router.get(
     res.send(links)
 })
 
-router.post('/username/:username/board/:boardname/links', async (req, res) => {
+router.post(
+    '/username/:username/board/:boardname/links',
+    validate({
+        body: {
+            type: 'object',
+            properties: {
+                link: {
+                    type: 'string',
+                    required: true,
+                    minLength: 1,
+                },
+            },
+            additionalProperties: false,
+        }
+    }),
+    async (req, res) => {
+
     // URL params
     const username = req.params.username
     const boardname = req.params.boardname
 
     // Req body
-    const bodyLink: PostLink = req.body
+    const bodyLink = req.body
 
     const db = new Database()
 
