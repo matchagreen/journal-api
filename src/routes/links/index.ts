@@ -1,4 +1,5 @@
 import express from 'express'
+import {validationResult, query, param} from 'express-validator';
 import Database from '../../utilities/Database.js'
 import Link from '../../models/Link.js'
 
@@ -12,36 +13,49 @@ interface GettLink {
     updatedAt: Date
 }
 
+
 const router = express.Router()
-router.get('/username/:username/board/:boardname/links', async (req, res) =>  {
+router.get(
+    '/username/:username/board/:boardname/links',
+    query('page').isInt({min: 1}),
+    query('size').isInt({min: 1}),
+    param('username').not().isEmpty(),
+    param('boardname').not().isEmpty(),
+    async (req, res) =>  {
+
+    // Validate
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({errors: errors.array()})
+    }
+
     // URL params
-    const username = req.params.username
-    const boardname = req.params.boardname
+    const username = req.params!.username
+    const boardname = req.params!.boardname
 
     // Query parameters
-    const page = req.query.page
-    const size = req.query.size
+    const page = parseInt(req.query!.page)
+    const size = parseInt(req.query!.size)
 
     const db = new Database()
 
     // Get user id and make sure it exists
     const user = await db.getUser(username)
     if (user === null) {
-        res.sendStatus(404)
-        return
+        return res.status(404).json({errors: [`user "${username}" not found`]})
     }
     const userId = user!._id
 
     // Get board id and make sure it exists
     const board = await db.getBoard(userId, boardname)
     if (board === null) {
-        res.sendStatus(404)
-        return
+        return res.status(404).json({errors: [`board "${boardname}" not found`]})
     }
+
     const boardId = board!._id
 
     // Get links
-    const links = await db.getBoardLinks(boardId, -1, -1)
+    const links = await db.getBoardLinks(boardId, page, size)
     res.send(links)
 })
 
