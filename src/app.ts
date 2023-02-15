@@ -19,6 +19,11 @@ app.use((err: any, req: any, res: any, next: any) => {
         const validations = err.validations
         res.status(400).json({errors: validations})
     }
+
+    // TODO: Fix issues with parsing non json body
+    if (err.name === 'SyntaxError') {
+        res.status(400).json({errors: err})
+    }
 })
 
 // app.get('/', (req, res) => {
